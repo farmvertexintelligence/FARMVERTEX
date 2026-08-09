@@ -5,8 +5,12 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 
+const path = require('path');
+
 const app = express();
 app.use(express.json({ limit: '20kb' }));
+// Serve the frontend (index.html) from the parent directory
+app.use(express.static(path.join(__dirname, '..')));
 
 // ---- CORS: only allow the frontend origins you configure in .env ----
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
