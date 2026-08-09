@@ -388,7 +388,7 @@
   .presence-body p{ color:#C7CFC4; margin-bottom:18px; font-size:0.98rem; }
 
   /* CTA */
-  .cta-section{ padding:150px 0; text-align:center; }
+  .cta-section{ padding:150px 0; text-align:center; position:relative; z-index:10; }
   .cta-section.bordered{ border-top:1px solid var(--panel-line); }
   .cta-section h2{ font-size:clamp(2.2rem, 5vw, 3.2rem); margin-bottom:30px; }
   .cta-section .btn{ padding:16px 32px; }
@@ -537,11 +537,11 @@
 
   .loader-video {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 600px;
+    height: 100%;
+    object-fit: cover;
     transition: opacity 0.5s ease, visibility 0.5s ease;
   }
 
@@ -660,6 +660,26 @@
     border-color: var(--chloro);
     background: rgba(111, 207, 124, 0.05);
   }
+  /* HISTORY MODAL */
+  #history-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(10, 15, 10, 0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  #history-modal.active { opacity: 1; visibility: visible; }
+  .history-content {
+    background: var(--panel); border: 1px solid var(--gold);
+    max-width: 500px; padding: 40px; text-align: left; position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .history-close {
+    position: absolute; top: 16px; right: 20px; color: var(--sage);
+    font-size: 1.2rem; cursor: pointer; background: transparent; border: none;
+  }
+  .history-close:hover { color: var(--gold); }
+  .history-title { font-family: 'Fraunces', serif; color: var(--gold); margin-bottom: 12px; }
+  .history-text { color: #C7CFC4; font-size: 0.95rem; line-height: 1.6; }
 </style>
 </head>
 <body class="loading">
@@ -1210,8 +1230,9 @@
     <span class="eyebrow">Join the network</span>
     <h2>Building this takes operators, not spectators.</h2>
     <p class="contact-lead">For partnerships, enterprise engagements, or general questions — this is the fastest way to reach us.</p>
+    <p class="contact-lead" style="margin-bottom: 30px;">Or email us directly at <br/><a href="mailto:hello@farmvertex.com" class="contact-email">hello@farmvertex.com</a></p>
 
-    <form id="contact-form" class="contact-card form-layout">
+    <form id="contact-form" class="contact-card form-layout" action="mailto:hello@farmvertex.com" method="POST" enctype="text/plain">
       <div class="form-group">
         <label for="name" class="contact-card-label">Name</label>
         <input type="text" id="name" name="name" required class="form-control">
@@ -1322,51 +1343,7 @@ console.log('%cFarmVertex Intelligence', 'color:#D9BD7E;font-size:14px;font-weig
   }, 7000); // Total 7 seconds loading time
 })();
 
-// Contact interface — Form submission to local backend
-(function(){
-  const form = document.getElementById('contact-form');
-  const statusEl = document.getElementById('form-status');
-  const submitBtn = document.getElementById('submit-btn');
-
-  if(!form) return;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    statusEl.className = 'form-status'; // reset
-    statusEl.textContent = '';
-    
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
-    submitBtn.style.opacity = '0.7';
-
-    const formData = new FormData(form);
-    const payload = Object.fromEntries(formData.entries());
-
-    try {
-      const res = await fetch('http://localhost:4000/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong.');
-      }
-      
-      statusEl.textContent = 'Message sent successfully. We will be in touch.';
-      statusEl.classList.add('active', 'success');
-      form.reset();
-    } catch (err) {
-      statusEl.textContent = err.message || 'Network error. Please ensure backend is running.';
-      statusEl.classList.add('active', 'error');
-    } finally {
-      submitBtn.textContent = 'Send Message';
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-    }
-  });
-})();
+// Contact interface handled via native mailto action
 
 // Reveal on scroll
 const revealEls = document.querySelectorAll('.reveal');
@@ -1630,10 +1607,15 @@ const reduceMotionGlobal = window.matchMedia('(prefers-reduced-motion: reduce)')
   const pointer = new THREE.Vector2();
   function handlePick(clientX, clientY){
     const rect = renderer.domElement.getBoundingClientRect();
-    pointer.x = ((clientX-rect.left)/rect.width)*2-1;
-    pointer.y = -((clientY-rect.top)/rect.height)*2+1;
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(plant.children, true);
+    const offsets = [[0,0], [6,0], [-6,0], [0,6], [0,-6], [5,5], [-5,-5], [5,-5], [-5,5]];
+    let intersects = [];
+    for(const [dx, dy] of offsets) {
+      pointer.x = ((clientX + dx - rect.left)/rect.width)*2-1;
+      pointer.y = -((clientY + dy - rect.top)/rect.height)*2+1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(plant.children, true);
+      if (hits.length) { intersects = hits; break; }
+    }
     if(intersects.length){
       let obj = intersects[0].object;
       while(obj && !obj.userData.partName && obj.parent){ obj = obj.parent; }
@@ -1953,10 +1935,15 @@ const reduceMotionGlobal = window.matchMedia('(prefers-reduced-motion: reduce)')
   const pointer = new THREE.Vector2();
   function handlePick(clientX, clientY){
     const rect = renderer.domElement.getBoundingClientRect();
-    pointer.x = ((clientX-rect.left)/rect.width)*2-1;
-    pointer.y = -((clientY-rect.top)/rect.height)*2+1;
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(plant.children, true);
+    const offsets = [[0,0], [6,0], [-6,0], [0,6], [0,-6], [5,5], [-5,-5], [5,-5], [-5,5]];
+    let intersects = [];
+    for(const [dx, dy] of offsets) {
+      pointer.x = ((clientX + dx - rect.left)/rect.width)*2-1;
+      pointer.y = -((clientY + dy - rect.top)/rect.height)*2+1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(plant.children, true);
+      if (hits.length) { intersects = hits; break; }
+    }
     if(intersects.length){
       let obj = intersects[0].object;
       while(obj && !obj.userData.partName && obj.parent){ obj = obj.parent; }
@@ -2265,5 +2252,51 @@ const reduceMotionGlobal = window.matchMedia('(prefers-reduced-motion: reduce)')
 })();
 </script>
 
+<div id="history-modal">
+  <div class="history-content">
+    <button class="history-close" id="history-close">&times;</button>
+    <h3 class="history-title" id="history-title">Plant History</h3>
+    <p class="history-text" id="history-text">History loading...</p>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const modal = document.getElementById('history-modal');
+    const closeBtn = document.getElementById('history-close');
+    const title = document.getElementById('history-title');
+    const text = document.getElementById('history-text');
+
+    function openModal(plantName, plantText) {
+      if(!modal) return;
+      title.textContent = plantName;
+      text.textContent = plantText;
+      modal.classList.add('active');
+    }
+
+    if(closeBtn) {
+      closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    }
+    if(modal) {
+      modal.addEventListener('click', (e) => {
+        if(e.target === modal) modal.classList.remove('active');
+      });
+    }
+
+    const plantCanvas = document.querySelector('#plant-3d canvas');
+    if(plantCanvas) {
+      plantCanvas.addEventListener('dblclick', () => {
+        openModal("Eleusine coracana (Finger Millet)", "An ancient, highly resilient crop domesticated in the East African highlands. Known for extreme drought tolerance. FarmVertex genetic sequence initialized.");
+      });
+    }
+
+    const riceCanvas = document.querySelector('#rice-3d canvas');
+    if(riceCanvas) {
+      riceCanvas.addEventListener('dblclick', () => {
+        openModal("Oryza rufipogon (Wild Rice)", "The ancestral progenitor of domesticated Asian rice. Native to marshlands. Critical for genetic diversity and disease resistance traits. FarmVertex sequence tracking active.");
+      });
+    }
+  })();
+</script>
 </body>
 </html>
