@@ -1,0 +1,14 @@
+{
+  "name": "FarmVertex Intelligence",
+  "short_name": "FarmVertex",
+  "description": "Custom software, ERP, apps, AI and automation. Your software, your control.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0D0C",
+  "theme_color": "#0B0D0C",
+  "icons": [
+    { "src": "/assets/img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/img/logo-icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
