@@ -58,23 +58,23 @@ that platform's dashboard/secrets manager — don't commit `.env` to git.
 
 ## 5. Connect the frontend
 
-**Current state:** `index.html` in this folder does *not* call this backend. Its contact
-section is a simple mailto interface — an `hello@farmvertex.com` link with a
-copy-to-clipboard button, no form, no fetch call. That was a deliberate choice: it works
-with zero deployment.
+**Current state:** `contact.html` has a real form (name, email, organisation, interest,
+message, plus the `website` honeypot). It is handled by `assets/js/site.js`:
 
-If you'd rather have an actual on-site contact form that emails you (instead of opening
-the visitor's mail client), you'd need to:
+- **Without a backend** (the default), submitting validates the fields and opens the
+  visitor's email app with a prefilled message to hello@farmvertex.com.
+- **With this backend deployed**, add its URL to the form and it will POST JSON to it:
 
-1. Add a `<form>` back into the `#contact` section (fields: name, email, message).
-2. Add a small `fetch()` call on submit that POSTs JSON to this backend's `/api/contact`
-   endpoint (the request/response shape `server.js` expects is documented in the code
-   itself — see the `app.post('/api/contact', ...)` handler).
-3. Deploy this backend somewhere (see step 4 above) and point the fetch call at that URL.
-4. Add that same frontend URL to `ALLOWED_ORIGINS` in this backend's `.env`.
+  ```html
+  <form class="panel reveal" data-contact data-endpoint="https://YOUR-BACKEND/api/contact" novalidate>
+  ```
 
-This backend is ready to receive that request the moment you wire it up — it just isn't
-wired up in the current `index.html`.
+  The selected "Interested in" option is prefixed to the message, so the request shape
+  matches what `server.js` already expects (`name`, `email`, `organization`, `message`,
+  `website`).
+
+Remember to add the site's origin (e.g. `https://www.farmvertex.com`) to
+`ALLOWED_ORIGINS` in the backend's environment.
 
 ## Notes
 
