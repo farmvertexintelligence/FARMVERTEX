@@ -59,14 +59,14 @@ that platform's dashboard/secrets manager — don't commit `.env` to git.
 ## 5. Connect the frontend
 
 **Current state:** `contact.html` has a real form (name, email, organisation, interest,
-message, plus the `website` honeypot). It is handled by `assets/js/site.js`:
+message, plus the `website` honeypot). It is handled by `assets/js/app.js`:
 
 - **Without a backend** (the default), submitting validates the fields and opens the
   visitor's email app with a prefilled message to hello@farmvertex.com.
 - **With this backend deployed**, add its URL to the form and it will POST JSON to it:
 
   ```html
-  <form class="panel reveal" data-contact data-endpoint="https://YOUR-BACKEND/api/contact" novalidate>
+  <form class="glass" data-contact data-endpoint="https://YOUR-BACKEND/api/contact" novalidate>
   ```
 
   The selected "Interested in" option is prefixed to the message, so the request shape

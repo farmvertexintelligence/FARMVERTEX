@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI and Automation | FarmVertex Intelligence</title>
 <meta name="description" content="Practical AI solutions, AI automation, workflow automation and business dashboards from FarmVertex Intelligence.">
-<meta name="author" content="FarmVertex Intelligence">
 <link rel="canonical" href="https://www.farmvertex.com/ai-automation.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FarmVertex Intelligence">
@@ -13,183 +12,176 @@
 <meta property="og:description" content="Practical AI solutions, AI automation, workflow automation and business dashboards from FarmVertex Intelligence.">
 <meta property="og:url" content="https://www.farmvertex.com/ai-automation.html">
 <meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#1E3A2F">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231E3A2F'/%3E%3Cg fill='none' stroke='%23D9BD7E' stroke-width='1.6'%3E%3Cpath d='M6 8 16 25 26 8Z'/%3E%3Cpath d='M6 8 16 15 26 8M16 15V25'/%3E%3C/g%3E%3C/svg%3E">
-<script>(function(){try{var t=localStorage.getItem('fv-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js');})();</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B0D0C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230B0D0C'/%3E%3Cg fill='none' stroke='%23D4A95A' stroke-width='1.6'%3E%3Cpath d='M16 4 26.4 10v12L16 28 5.6 22V10Z'/%3E%3Cpath d='M16 4v24M5.6 10l20.8 12M26.4 10 5.6 22'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js');</script>
 <link rel="stylesheet" href="assets/vendor/phosphor/style.css">
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/main.css">
+<script type="importmap">{"imports":{"three":"./assets/vendor/three/three.module.min.js"}}</script>
 </head>
-<body data-shape="lattice" data-anchor="right">
+<body>
 <a class="skip" href="#main">Skip to content</a>
-<div id="scene" aria-hidden="true"></div>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="index.html" aria-label="FarmVertex Intelligence home">
-      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 6.5 16 27 28 6.5Z"/><path d="M4 6.5 16 14.5 28 6.5M16 14.5V27"/><circle cx="16" cy="14.5" r="2.1" fill="currentColor" stroke="none"/></svg>
-      <span class="brand-word">FARM<b>VERTEX</b><small>INTELLIGENCE</small></span>
-    </a>
-    <nav class="nav" aria-label="Primary">
-      <ul>
-        <li><a href="services.html">Services</a></li>
-        <li><a href="products.html">Products</a></li>
-        <li><a href="ai-automation.html" aria-current="page">AI &amp; Automation</a></li>
-        <li><a href="industries.html">Industries</a></li>
-        <li><a href="process.html">Process</a></li>
-        <li><a href="company.html">Company</a></li>
-      </ul>
-      <div class="nav-tools">
-        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme"><i class="ph ph-moon" aria-hidden="true"></i></button>
-        <a class="btn btn-primary btn-sm" href="contact.html">Start a project</a>
-        <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav"><i class="ph ph-list" aria-hidden="true"></i></button>
-      </div>
-    </nav>
-  </div>
-</header>
-<div class="mobile-nav" id="mobile-nav">
-  <ul>
+<div class="curtain" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 2.5 28.5 9.7v12.6L16 29.5 3.5 22.3V9.7Z"/><path d="M16 2.5v27M3.5 9.7 28.5 22.3M28.5 9.7 3.5 22.3"/><circle cx="16" cy="16" r="2.4" fill="currentColor" stroke="none"/></svg><span class="bar"></span></div>
+<div id="world" aria-hidden="true"></div>
+<div class="atmos" aria-hidden="true"></div>
+<header class="nav">
+  <a class="brand" href="index.html" aria-label="FarmVertex Intelligence home">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 2.5 28.5 9.7v12.6L16 29.5 3.5 22.3V9.7Z"/><path d="M16 2.5v27M3.5 9.7 28.5 22.3M28.5 9.7 3.5 22.3"/><circle cx="16" cy="16" r="2.4" fill="currentColor" stroke="none"/></svg>
+    <span class="brand-name">FarmVertex<span>INTELLIGENCE</span></span>
+  </a>
+  <nav aria-label="Primary">
+    <ul class="nav-links">
       <li><a href="services.html">Services</a></li>
       <li><a href="products.html">Products</a></li>
-      <li><a href="ai-automation.html">AI &amp; Automation</a></li>
+      <li><a href="ai-automation.html" aria-current="page">AI &amp; Automation</a></li>
       <li><a href="industries.html">Industries</a></li>
       <li><a href="process.html">Process</a></li>
       <li><a href="company.html">Company</a></li>
-      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-gold btn-sm" href="contact.html" data-magnetic>Start a project <span class="ic"><i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>
+    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu"><i class="ph ph-list" aria-hidden="true"></i></button>
+  </div>
+</header>
+<div class="menu" id="menu">
+  <ul>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="ai-automation.html">AI &amp; Automation</a></li>
+    <li><a href="industries.html">Industries</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="company.html">Company</a></li>
+    <li><a href="contact.html">Contact</a></li>
   </ul>
-  <a class="btn btn-primary" href="contact.html">Start a project <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+  <a class="btn btn-gold" href="contact.html" data-magnetic>Start a project <span class="ic"><i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>
 </div>
 <main id="main">
-
-  <section class="hero page-hero">
+  <section class="hero hero-sub" data-shape="helix" data-x="0.35">
     <div class="wrap">
-      <div class="hero-copy">
-        <span class="eyebrow reveal">AI and automation</span>
-        <h1 data-split>Intelligence that<br>does <em>real work.</em></h1>
-        <p class="lead reveal">AI and automation built into your everyday processes, with people kept in charge of the decisions that matter.</p>
-        <div class="hero-cta reveal">
-          <a class="btn btn-primary" href="contact.html">Start a project <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      <div class="hero-grid">
+        <div>
+          <span class="kicker" data-hero-in>AI and automation</span>
+          <h1 class="display-2" data-chars style="margin-top:26px">Intelligence that<br>does <span class="gold">real work.</span></h1>
         </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true"></div>
-    </div>
-  </section>
-
-  <section class="stack-section pad-sm">
-    <div class="wrap">
-      <div class="stack-head">
-        <h2 data-split>Four places AI<br>earns its keep.</h2>
-      </div>
-      <div class="stack-list">
-        <article class="panel stack-card">
-          <div>
-            <span class="num">Understand</span>
-            <h3>Documents and data</h3>
-            <p>Read invoices, forms, contracts and emails, pull out what matters and file it in the right system.</p>
-            <div class="tags"><span>Extraction</span><span>Classification</span><span>Search</span></div>
-          </div>
-          <div class="glyph" aria-hidden="true"><i class="ph ph-file-magnifying-glass"></i></div>
-        </article>
-        <article class="panel panel-green stack-card">
-          <div>
-            <span class="num" style="color:#D9BD7E">Respond</span>
-            <h3>Assistants for teams and customers</h3>
-            <p>Assistants that answer from your own documents and hand over to a person when they should.</p>
-            <div class="tags"><span>Knowledge assistants</span><span>Support replies</span></div>
-          </div>
-          <div class="glyph" aria-hidden="true"><i class="ph ph-chats-circle"></i></div>
-        </article>
-        <article class="panel stack-card">
-          <div>
-            <span class="num">Flow</span>
-            <h3>Workflow automation</h3>
-            <p>Approvals, reminders, data entry and hand-offs between tools run on their own, with a clear log of every step.</p>
-            <div class="tags"><span>Triggers</span><span>Approvals</span><span>Notifications</span></div>
-          </div>
-          <div class="glyph" aria-hidden="true"><i class="ph ph-flow-arrow"></i></div>
-        </article>
-        <article class="panel stack-card b-gold">
-          <div>
-            <span class="num">See</span>
-            <h3>Dashboards and reporting</h3>
-            <p>Reports that build themselves, with plain-language summaries of what changed and why.</p>
-            <div class="tags"><span>Live dashboards</span><span>Scheduled reports</span></div>
-          </div>
-          <div class="glyph" aria-hidden="true"><i class="ph ph-chart-line-up"></i></div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="pad">
-    <div class="wrap">
-      <h2 data-split>How an automation<br>project runs.</h2>
-      <div class="timeline">
-        <div class="timeline-line" aria-hidden="true"><span></span></div>
-        <div class="step reveal">
-          <h3>Map the work</h3>
-          <p>We walk through the process with the people who do it and mark the steps that are slow, repetitive or error-prone.</p>
-        </div>
-        <div class="step reveal">
-          <h3>Prove it small</h3>
-          <p>One workflow, automated end to end, measured against how it ran before.</p>
-        </div>
-        <div class="step reveal">
-          <h3>Keep people in the loop</h3>
-          <p>Review points, clear logs and simple overrides so your team stays confident in the results.</p>
-        </div>
-        <div class="step reveal">
-          <h3>Extend what works</h3>
-          <p>Roll the approach out to the next process only after the first one proves its value.</p>
+        <div class="hero-side">
+          <p class="lead" data-hero-in>AI and automation built into everyday processes, with people kept in charge of the decisions that matter.</p>
+          <div class="hero-actions" data-hero-in><a class="btn btn-gold" href="contact.html" data-magnetic>Start a project <span class="ic"><i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="pad-sm">
-    <div class="wrap">
-      <div class="panel panel-green cta-band depth">
-        <div>
-          <h2>Which task would you <em>hand off</em> first?</h2>
-          <p style="margin-top:20px">Tell us the job your team repeats most. We will tell you whether automation is worth it.</p>
-        </div>
-        <a class="btn btn-primary" href="contact.html">Start a project <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+    <div class="wrap chapters">
+      <div class="chapters-sticky">
+        <h2 data-chars>Four jobs<br>AI does<br>well.</h2>
+        <div class="chapter-index" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
       </div>
+      <div>
+        <div class="chapter" data-shape="network" data-x="-0.5">
+          <div class="glass spot">
+            <div class="ico"><i class="ph ph-file-magnifying-glass" aria-hidden="true"></i></div>
+            <h3>Understand documents</h3>
+            <p>Read invoices, forms, contracts and emails, pull out what matters and file it in the right place.</p>
+            <div class="chips"><span class="chip">Extraction</span><span class="chip">Classification</span><span class="chip">Search</span></div>
+          </div>
+        </div>
+        <div class="chapter" data-shape="helix" data-x="-0.5">
+          <div class="glass spot">
+            <div class="ico"><i class="ph ph-chats-circle" aria-hidden="true"></i></div>
+            <h3>Answer questions</h3>
+            <p>Assistants that answer from your own knowledge and hand over to a person when they should.</p>
+            <div class="chips"><span class="chip">Knowledge assistants</span><span class="chip">Support replies</span></div>
+          </div>
+        </div>
+        <div class="chapter" data-shape="wave" data-x="-0.5">
+          <div class="glass spot">
+            <div class="ico"><i class="ph ph-flow-arrow" aria-hidden="true"></i></div>
+            <h3>Run workflows</h3>
+            <p>Approvals, reminders, data entry and hand-offs run on their own, with a clear log of every step.</p>
+            <div class="chips"><span class="chip">Triggers</span><span class="chip">Approvals</span><span class="chip">Notifications</span></div>
+          </div>
+        </div>
+        <div class="chapter" data-shape="grid" data-x="-0.5">
+          <div class="glass spot">
+            <div class="ico"><i class="ph ph-chart-line-up" aria-hidden="true"></i></div>
+            <h3>Report automatically</h3>
+            <p>Reports that build themselves, with plain-language summaries of what changed and why.</p>
+            <div class="chips"><span class="chip">Live dashboards</span><span class="chip">Scheduled reports</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hpan" data-shape="rings" data-x="0">
+    <div class="hpan-pin">
+      <div class="wrap"><h2 data-chars>How an automation<br>project runs.</h2></div>
+      <div class="hpan-track">
+        <article class="glass hpan-card spot">
+          <span class="n">Map</span>
+          <div><h3>Map the work</h3><p>We walk through the process with the people who do it and mark the slow, repetitive, error-prone steps.</p></div>
+        </article>
+        <article class="glass hpan-card spot">
+          <span class="n">Prove</span>
+          <div><h3>Prove it small</h3><p>One workflow automated end to end, measured against how it ran before.</p></div>
+        </article>
+        <article class="glass hpan-card spot">
+          <span class="n">Guard</span>
+          <div><h3>Keep people in charge</h3><p>Review points, clear logs and simple overrides so your team trusts the results.</p></div>
+        </article>
+        <article class="glass hpan-card spot">
+          <span class="n">Extend</span>
+          <div><h3>Extend what works</h3><p>Roll out to the next process only after the first one proves its value.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="pad statement" data-shape="sphere" data-x="0">
+    <div class="wrap">
+      <p class="kinetic">Automation should feel like <span class="hl">an extra pair of hands,</span> not a black box. Every step is logged, reviewable and easy to switch off.</p>
+    </div>
+  </section>
+
+  <section class="zoom-sec" data-shape="sphere" data-x="0">
+    <div class="zoom">
+      <h2 data-chars>Which task would you<br>hand off first?</h2>
+      <p class="lead">Tell us the job your team repeats most. We will tell you honestly whether automation is worth it.</p>
+      <a class="btn btn-gold" href="contact.html" data-magnetic>Start a project <span class="ic"><i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>
     </div>
   </section>
 
 </main>
 <footer class="site-footer">
   <div class="wrap">
-    <div class="foot-top">
+    <div class="foot-grid">
       <div>
-        <a class="brand" href="index.html" aria-label="FarmVertex Intelligence home">
-          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 6.5 16 27 28 6.5Z"/><path d="M4 6.5 16 14.5 28 6.5M16 14.5V27"/><circle cx="16" cy="14.5" r="2.1" fill="currentColor" stroke="none"/></svg>
-          <span class="brand-word">FARM<b>VERTEX</b><small>INTELLIGENCE</small></span>
-        </a>
+        <a class="brand" href="index.html" aria-label="FarmVertex Intelligence home"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 2.5 28.5 9.7v12.6L16 29.5 3.5 22.3V9.7Z"/><path d="M16 2.5v27M3.5 9.7 28.5 22.3M28.5 9.7 3.5 22.3"/><circle cx="16" cy="16" r="2.4" fill="currentColor" stroke="none"/></svg><span class="brand-name">FarmVertex<span>INTELLIGENCE</span></span></a>
         <p class="foot-tag">Your software, your control.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="ai-automation.html">AI and automation</a></li>
+          <li><a href="industries.html">Industries</a></li>
+        </ul>
       </div>
       <div>
         <h4>Company</h4>
         <ul>
           <li><a href="company.html">About</a></li>
           <li><a href="process.html">How we work</a></li>
-          <li><a href="industries.html">Industries</a></li>
+          <li><a href="contact.html">Contact</a></li>
           <li><a href="legal.html">Legal and privacy</a></li>
         </ul>
       </div>
       <div>
-        <h4>Work</h4>
-        <ul>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="products.html">Products</a></li>
-          <li><a href="ai-automation.html">AI and automation</a></li>
-          <li><a href="contact.html">Start a project</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
+        <h4>Talk to us</h4>
         <ul>
           <li><a href="mailto:hello@farmvertex.com">hello@farmvertex.com</a></li>
           <li><a href="tel:+916369557273">+91 63695 57273</a></li>
@@ -197,16 +189,17 @@
         </ul>
       </div>
     </div>
-    <div class="foot-bottom">
-      <span>&copy; <span data-year>2026</span> FarmVertex Intelligence. A proprietorship enterprise, India.</span>
+    <div class="foot-legal">
+      <span>&copy; <span data-year>2026</span> FarmVertex Intelligence. Proprietorship enterprise, India.</span>
       <span>GSTIN 33QKOPK2592B1ZU</span>
     </div>
   </div>
+  <div class="wordmark" aria-hidden="true">FARMVERTEX</div>
 </footer>
-<script src="assets/vendor/three.min.js" defer></script>
 <script src="assets/vendor/gsap.min.js" defer></script>
 <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
-<script src="assets/js/site.js" defer></script>
-<script src="assets/js/scene.js" defer></script>
+<script src="assets/vendor/lenis.min.js" defer></script>
+<script src="assets/js/app.js" defer></script>
+<script type="module" src="assets/js/world.js"></script>
 </body>
 </html>
