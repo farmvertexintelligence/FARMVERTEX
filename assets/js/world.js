@@ -119,8 +119,8 @@ function init() {
 
   const uniforms = {
     uMix: { value: 0 }, uTime: { value: 0 }, uOpacity: { value: 0 },
-    uSize: { value: small() ? 34 : 42 }, uPR: { value: renderer.getPixelRatio() },
-    uGold: { value: new THREE.Color('#D4A95A') }, uIvory: { value: new THREE.Color('#EFEBE3') }, uGreen: { value: new THREE.Color('#3FA67A') }
+    uSize: { value: small() ? 50 : 62 }, uPR: { value: renderer.getPixelRatio() },
+    uGold: { value: new THREE.Color('#D8BF82') }, uIvory: { value: new THREE.Color('#EFEBE3') }, uGreen: { value: new THREE.Color('#3FA67A') }
   };
   const mat = new THREE.ShaderMaterial({
     uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
@@ -137,7 +137,7 @@ function init() {
         p += 0.035 * vec3(sin(uTime * 0.9 + aRand * 20.0), cos(uTime * 0.7 + aRand * 15.0), sin(uTime * 0.5 + aRand * 9.0));
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = uSize * uPR * (0.35 + aRand * 0.9) / -mv.z;
+        gl_PointSize = uSize * uPR * (0.5 + aRand * 0.9) / -mv.z;
         vRand = aRand; vDepth = -mv.z;
       }`,
     fragmentShader: `
@@ -149,7 +149,7 @@ function init() {
         float a = smoothstep(0.5, 0.0, d);
         vec3 c = vRand > 0.86 ? uIvory : (vRand < 0.14 ? uGreen : uGold);
         float fog = smoothstep(30.0, 8.0, vDepth);
-        gl_FragColor = vec4(c, a * a * uOpacity * fog * 0.9);
+        gl_FragColor = vec4(c, a * a * uOpacity * fog * 0.85);
       }`
   });
   const points = new THREE.Points(geo, mat);
@@ -162,19 +162,27 @@ function init() {
   const glass = new THREE.Mesh(
     new THREE.IcosahedronGeometry(1.55, 0),
     new THREE.MeshPhysicalMaterial({
-      color: 0xffffff, metalness: 0, roughness: 0.06, transmission: 1, thickness: 1.6, ior: 1.45,
-      attenuationColor: new THREE.Color('#E8C686'), attenuationDistance: 3.5, envMapIntensity: 1.4,
+      color: 0xffffff, metalness: 0, roughness: 0.02, transmission: 1, thickness: 0.35, ior: 1.18,
+      attenuationColor: new THREE.Color('#E9D6A8'), attenuationDistance: 3.5, envMapIntensity: 1.4,
       clearcoat: 1, clearcoatRoughness: 0.05, flatShading: true
     })
   );
-  const goldMat = new THREE.MeshStandardMaterial({ color: '#D4A95A', metalness: 1, roughness: 0.22, envMapIntensity: 1.3 });
-  const inner = new THREE.Mesh(new THREE.OctahedronGeometry(0.62, 0), goldMat);
+  const goldMat = new THREE.MeshStandardMaterial({ color: '#D8BF82', metalness: 1, roughness: 0.22, envMapIntensity: 1.3 });
+  // The FarmVertex mark (spire + two blades), extruded in gold at the heart of the glass.
+  const tri = (pts) => new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2((x - 512) / 440, (419 - y) / 440)));
+  const logoGeo = new THREE.ExtrudeGeometry(
+    [tri([[512, 100], [538, 325], [486, 325]]), tri([[512, 325], [392, 738], [185, 738]]), tri([[512, 325], [838, 738], [632, 738]])],
+    { depth: 0.16, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.02, bevelSegments: 2 }
+  );
+  logoGeo.center();
+  const inner = new THREE.Mesh(logoGeo, goldMat);
+  inner.rotation.order = 'YXZ'; // inverse of the core's XYZ rotation
   const ringA = new THREE.Mesh(new THREE.TorusGeometry(2.35, 0.018, 16, 200), goldMat);
   const ringB = new THREE.Mesh(new THREE.TorusGeometry(2.8, 0.01, 16, 200), goldMat);
   ringA.rotation.x = Math.PI / 2.4; ringB.rotation.set(Math.PI / 1.7, 0.4, 0);
   const cage = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.58, 0)),
-    new THREE.LineBasicMaterial({ color: '#E8C686', transparent: true, opacity: 0.55 })
+    new THREE.LineBasicMaterial({ color: '#E9D6A8', transparent: true, opacity: 0.55 })
   );
   core.add(glass, inner, cage, ringA, ringB);
   scene.add(core);
@@ -258,7 +266,8 @@ function init() {
       core.visible = h < 0.98;
       core.position.set(s ? 0 : 3.5 - h * 3.5, (s ? 2.7 : 1.35) + Math.sin(t * 0.8) * 0.12, h * 9.5);
       core.rotation.set(t * 0.18 + state.my * 0.3, t * 0.26 + state.mx * 0.4, 0);
-      inner.rotation.set(-t * 0.6, -t * 0.4, 0);
+      // Counter-rotate against the glass so the mark stays upright and readable.
+      inner.rotation.set(-core.rotation.x, -core.rotation.y + Math.sin(t * 0.6) * 0.5, 0);
       ringA.rotation.z = t * 0.3; ringB.rotation.z = -t * 0.22;
       const sc = (s ? 0.7 : 0.82) * (1 + h * 0.6);
       core.scale.setScalar(sc);
