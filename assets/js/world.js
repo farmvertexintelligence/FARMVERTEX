@@ -249,7 +249,12 @@ function init() {
   function frame() {
     const t = clock.getElapsedTime();
     uniforms.uTime.value = t;
-    const s = small();
+    // Frame for the screen's shape, not just its width: tall screens (phones,
+    // portrait tablets, "desktop site" mode on phones) get the centred layout.
+    const aspect = window.innerWidth / window.innerHeight;
+    const s = small() || aspect < 1;
+    const camZ = s ? 17 : 14;
+    const halfW = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camZ * aspect;
     state.mx += (state.tx - state.mx) * 0.04;
     state.my += (state.ty - state.my) * 0.04;
     state.fieldX += ((s ? 0 : state.targetX) - state.fieldX) * 0.035;
@@ -257,19 +262,23 @@ function init() {
     // Field: gentle spin, scroll-driven rotation, section offset.
     field.rotation.y = t * 0.04 + state.page * Math.PI * 1.6 + state.mx * 0.25;
     field.rotation.x = Math.sin(t * 0.1) * 0.08 + state.my * 0.15;
-    field.position.x = state.fieldX * 5.2;
+    field.position.x = state.fieldX * Math.min(5.2, halfW * 0.6);
     field.position.y = s ? 1.2 : 0;
+    // On tall screens, shrink the field so it fits the width.
+    field.scale.setScalar(s ? Math.min(1, Math.max(0.55, halfW / 3.9)) : 1);
 
     // Core: floats in the hero, then flies toward the camera and dissolves.
     if (hasCore) {
       const h = state.heroOut;
       core.visible = h < 0.98;
-      core.position.set(s ? 0 : 3.5 - h * 3.5, (s ? 2.7 : 1.35) + Math.sin(t * 0.8) * 0.12, h * 9.5);
+      // Keep the core (rings included) inside the right edge on narrower landscape screens.
+      const coreX = Math.min(3.5, Math.max(0, halfW - 2.6));
+      core.position.set(s ? 0 : coreX * (1 - h), (s ? 2.7 : 1.35) + Math.sin(t * 0.8) * 0.12, h * 9.5);
       core.rotation.set(t * 0.18 + state.my * 0.3, t * 0.26 + state.mx * 0.4, 0);
       // Counter-rotate against the glass so the mark stays upright and readable.
       inner.rotation.set(-core.rotation.x, -core.rotation.y + Math.sin(t * 0.6) * 0.5, 0);
       ringA.rotation.z = t * 0.3; ringB.rotation.z = -t * 0.22;
-      const sc = (s ? 0.7 : 0.82) * (1 + h * 0.6);
+      const sc = (s ? Math.min(0.7, halfW / 4.2) : 0.82) * (1 + h * 0.6);
       core.scale.setScalar(sc);
     } else {
       core.visible = false;
@@ -277,7 +286,7 @@ function init() {
 
     // Camera: dolly in through mid-page, parallax with pointer.
     const dolly = Math.sin(state.page * Math.PI);
-    camera.position.z = (s ? 17 : 14) - dolly * 3.5;
+    camera.position.z = camZ - dolly * 3.5;
     camera.position.x = state.mx * 0.6;
     camera.position.y = state.my * 0.4;
     camera.lookAt(0, 0, 0);
