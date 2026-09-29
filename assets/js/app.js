@@ -3,6 +3,10 @@
    readable static layout when GSAP is missing or reduced motion is requested. */
 (function () {
   'use strict';
+  /* Analytics: paste a Google Analytics 4 measurement ID (for example 'G-ABC123XYZ') to turn it on.
+     While it is empty, no analytics loads, no cookies are set and no consent banner is shown. */
+  var ANALYTICS_ID = '';
+
   var doc = document.documentElement;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hasGsap = !!(window.gsap && window.ScrollTrigger);
@@ -99,6 +103,8 @@
   }
 
   initForm();
+  initStickyCta();
+  initConsent();
 
   if (!hasGsap) { reveal(); return; }
 
@@ -291,13 +297,29 @@
   function initForm() {
     var form = $('form[data-contact]');
     if (!form) return;
-    var status = $('.form-status', form), btn = $('button[type="submit"]', form);
+    var status = $('.form-status', form), btn = $('button[type="submit"]', form), label = $('.btn-label', btn);
+    var rules = {
+      name: function (v) { return v ? '' : 'Please enter your name.'; },
+      email: function (v) { return !v ? 'Please enter your email address.' : (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : 'That email address does not look right. Please check it.'); },
+      message: function (v) { return !v ? 'Tell us a little about what you need.' : (v.length < 10 ? 'Please add a few more details (at least 10 characters).' : ''); }
+    };
     function setErr(name, msg) {
       var f = form.elements[name]; if (!f) return;
       var wrap = f.closest('.field'); wrap.classList.toggle('invalid', !!msg);
       f.setAttribute('aria-invalid', msg ? 'true' : 'false');
       var e = $('.err', wrap); if (e) e.textContent = msg || '';
     }
+    function setStatus(kind, text) { status.className = 'form-status' + (kind ? ' ' + kind : ''); status.textContent = text || ''; }
+    function setBusy(busy) {
+      btn.setAttribute('aria-busy', busy ? 'true' : 'false'); btn.disabled = busy;
+      if (label) label.textContent = busy ? 'Sending...' : 'Send message';
+    }
+    // Re-validate a field once the visitor has seen its error, so the message clears as they fix it.
+    Object.keys(rules).forEach(function (name) {
+      var f = form.elements[name];
+      f.addEventListener('input', function () { if (f.getAttribute('aria-invalid') === 'true') setErr(name, rules[name](f.value.trim())); });
+      f.addEventListener('blur', function () { if (f.value.trim()) setErr(name, rules[name](f.value.trim())); });
+    });
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       var d = {
@@ -305,30 +327,87 @@
         organization: form.elements.organization.value.trim(), service: form.elements.service.value,
         message: form.elements.message.value.trim(), website: form.elements.website.value
       };
-      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email);
-      setErr('name', d.name ? '' : 'Please enter your name.');
-      setErr('email', emailOk ? '' : 'Please enter a valid email address.');
-      setErr('message', d.message ? '' : 'Tell us a little about what you need.');
-      if (!d.name || !emailOk || !d.message) { status.className = 'form-status bad'; status.textContent = 'Please check the highlighted fields.'; return; }
+      var firstBad = null;
+      Object.keys(rules).forEach(function (name) {
+        var msg = rules[name](d[name]); setErr(name, msg);
+        if (msg && !firstBad) firstBad = form.elements[name];
+      });
+      if (firstBad) { setStatus('bad', 'Please fix the highlighted fields and try again.'); firstBad.focus(); return; }
+
       var endpoint = form.getAttribute('data-endpoint');
       if (!endpoint) {
         var body = 'Name: ' + d.name + '\nEmail: ' + d.email + '\nOrganisation: ' + (d.organization || '-') + '\nInterested in: ' + (d.service || '-') + '\n\n' + d.message;
         window.location.href = 'mailto:hello@farmvertex.com?subject=' + encodeURIComponent('Project enquiry from ' + d.name) + '&body=' + encodeURIComponent(body);
-        status.className = 'form-status ok';
-        status.textContent = 'Your email app should open with the message ready to send. If it does not, write to hello@farmvertex.com.';
+        setStatus('ok', 'Your email app should open with the message ready. Press send there to reach us. If nothing opened, email hello@farmvertex.com.');
         return;
       }
-      btn.disabled = true; var label = btn.innerHTML; btn.textContent = 'Sending...';
-      status.className = 'form-status'; status.textContent = '';
-      fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+
+      setBusy(true); setStatus('', '');
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : 0;
+      fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
         body: JSON.stringify({ name: d.name, email: d.email, organization: d.organization, message: (d.service ? '[' + d.service + '] ' : '') + d.message, website: d.website }) })
-        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
         .then(function (res) {
-          if (!res.ok) throw new Error((res.j && res.j.error) || 'Something went wrong.');
-          form.reset(); status.className = 'form-status ok'; status.textContent = 'Thank you. Your message has been sent and we will reply by email.';
+          if (res.status === 429) throw new Error('Too many messages from this connection. Please wait a few minutes and try again.');
+          if (!res.ok) throw new Error((res.j && res.j.error) || 'Something went wrong on our side.');
+          var thanks = form.getAttribute('data-thanks');
+          if (thanks) { window.location.href = thanks; return; }
+          form.reset(); setStatus('ok', 'Thank you. Your message has been sent and we will reply by email.');
         })
-        .catch(function (err) { status.className = 'form-status bad'; status.textContent = (err.message || 'Could not send.') + ' You can also email hello@farmvertex.com directly.'; })
-        .then(function () { btn.disabled = false; btn.innerHTML = label; });
+        .catch(function (err) {
+          var msg = err && err.name === 'AbortError' ? 'The connection timed out.' :
+            (err && err.message && err.message !== 'Failed to fetch' ? err.message : 'We could not reach our server. Please check your connection.');
+          setStatus('bad', msg + ' You can also email hello@farmvertex.com directly.');
+        })
+        .then(function () { clearTimeout(timer); setBusy(false); });
     });
+  }
+
+  /* ---------- Sticky mobile CTA: appears once the hero's own buttons scroll away ---------- */
+  function initStickyCta() {
+    var bar = $('.mcta');
+    if (!bar) return;
+    var hero = $('.hero');
+    if (!hero || !('IntersectionObserver' in window)) { bar.classList.add('show'); return; }
+    new IntersectionObserver(function (entries) {
+      bar.classList.toggle('show', !entries[0].isIntersecting);
+    }, { threshold: 0.15 }).observe(hero);
+  }
+
+  /* ---------- Analytics with consent (ID is set at the top of this file) ---------- */
+  function initConsent() {
+    if (!ANALYTICS_ID) return;
+    var KEY = 'fv-consent';
+    function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function set(v) { try { localStorage.setItem(KEY, v); } catch (e) { /* storage unavailable: ask again next visit */ } }
+    function loadAnalytics() {
+      if (window.gtag) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', ANALYTICS_ID, { anonymize_ip: true });
+      var sc = document.createElement('script');
+      sc.async = true; sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ANALYTICS_ID);
+      document.head.appendChild(sc);
+    }
+    function banner() {
+      if ($('.consent')) return;
+      var el = document.createElement('div');
+      el.className = 'consent'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Cookie preferences');
+      el.innerHTML = '<p>We use analytics cookies to understand how visitors use this site, only if you allow it. See our <a href="privacy.html">privacy policy</a>.</p>' +
+        '<div class="consent-actions"><button type="button" class="btn btn-gold btn-sm" data-c="granted">Accept</button>' +
+        '<button type="button" class="btn btn-line btn-sm" data-c="denied">Decline</button></div>';
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-c]'); if (!b) return;
+        var v = b.getAttribute('data-c'); set(v); el.remove();
+        if (v === 'granted') loadAnalytics();
+        else if (get() === 'denied' && window.gtag) window.location.reload();
+      });
+      document.body.appendChild(el);
+    }
+    $$('[data-cookie-settings]').forEach(function (b) { b.hidden = false; b.addEventListener('click', banner); });
+    var c = get();
+    if (c === 'granted') loadAnalytics(); else if (!c) banner();
   }
 })();
