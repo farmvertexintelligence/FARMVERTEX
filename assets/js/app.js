@@ -5,7 +5,7 @@
   'use strict';
   /* Analytics: paste a Google Analytics 4 measurement ID (for example 'G-ABC123XYZ') to turn it on.
      While it is empty, no analytics loads, no cookies are set and no consent banner is shown. */
-  var ANALYTICS_ID = '';
+  var ANALYTICS_ID = 'G-HV0RH50NCV';
 
   var doc = document.documentElement;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -386,7 +386,7 @@
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
       window.gtag('js', new Date());
-      window.gtag('config', ANALYTICS_ID, { anonymize_ip: true });
+      window.gtag('config', ANALYTICS_ID);
       var sc = document.createElement('script');
       sc.async = true; sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ANALYTICS_ID);
       document.head.appendChild(sc);
