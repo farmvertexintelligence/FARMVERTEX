@@ -278,6 +278,8 @@ p { color: var(--ivory-2); max-width: 60ch; }
 .bento > * { padding: 34px; min-height: 280px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
 .bento .ico-lg { position: absolute; top: 30px; left: 34px; font-size: 2.1rem; color: var(--gold); }
 .bento h3 { margin-bottom: 10px; }
+.bento > .room-top { padding-top: 120px; }
+.card-link { text-decoration: none; color: inherit; }
 .c-7 { grid-column: span 7; } .c-5 { grid-column: span 5; } .c-4 { grid-column: span 4; } .c-6 { grid-column: span 6; } .c-8 { grid-column: span 8; } .c-12 { grid-column: span 12; }
 .tall { min-height: 400px; }
 .bg-grid {
